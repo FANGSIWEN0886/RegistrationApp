@@ -7,7 +7,7 @@ const app = express();
 const session = require("express-session");
 const flash = require('connect-flash');
 
-// Database connection
+// Database connection: Enable Database hosting
 const db = mysql.createConnection({
     host: 'c237-adib-mysql.mysql.database.azure.com',
     user: 'c237_019',
