@@ -3,15 +3,20 @@ const mysql = require('mysql2');
 const app = express();
 
 //******** TODO: Insert code to import 'express-session' *********//
+// Enable carrying the session along the browsers:
 const session = require("express-session");
 const flash = require('connect-flash');
 
 // Database connection
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'RP738964$',
-    database: 'C237_usersdb'
+    host: 'c237-adib-mysql.mysql.database.azure.com',
+    user: 'c237_019',
+    password: 'c237019@2026!',
+    database: 'C237_019_team5_userdb',
+    ssl: {
+        // Won't reject an unauthorized website:
+        rejectUnauthorized:false
+    }
 });
 
 db.connect((err) => {
@@ -24,7 +29,7 @@ db.connect((err) => {
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
 
-//******** TODO: Insert code for Session Middleware below ********//
+// Session Middleware:
 app.use( session ({
     secret: "secret",
     resave: false,
@@ -45,7 +50,7 @@ const checkAuthenticated = (req, res, next) => {
         return next();
     } else {
         req.flash('error', 'Please log in to view this resource');
-        res.redirect('/login')
+        res.redirect('/login');
     };
 };
 // Create a Middleware to check if user is admin. ********//
@@ -53,7 +58,7 @@ const checkadmin = (req, res, next) => {
     if (req.session.user.role === 'admin') {
         return next();
     } else {
-        req.flash('error', 'Access Denied.')
+        req.flash('error', 'Access Denied.');
     };
 };
 
@@ -135,8 +140,10 @@ app.post('/login', (req, res) => {
         }
         if (results.length > 0) {
             // Successful Login:
+            
             // Store user in session
             req.session.user = results[0];
+            
             // First parameter indicate the status of Login
             req.flash('success', 'Login successfully!');
             res.redirect('/dashboard');
@@ -160,7 +167,7 @@ app.get('/admin', checkadmin, (req, res) => {
 
 // logout route:
 app.get('/logout', (req, res) => {
-    // Using "req.session.destroy()" to disable the session been used and clear the data stored inside.
+    // Using ".destroy()" function to disable the session and clear the data stored inside.
     req.session.destroy();
     res.redirect('/');
 });
